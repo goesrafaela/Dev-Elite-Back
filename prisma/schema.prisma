@@ -1,0 +1,286 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  CLIENT
+  ORGANIZER
+  GATE
+}
+
+enum EventType {
+  SHOW
+  CINEMA
+  THEATER
+  SPORT
+  OTHER
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  FINISHED
+}
+
+enum EventSeatStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  BLOCKED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  REFUNDED
+}
+
+enum TicketStatus {
+  VALID
+  USED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole
+
+  events       Event[]
+  reservations Reservation[]
+  tickets      Ticket[]
+  checkIns     CheckIn[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Venue {
+  id       String @id @default(uuid())
+  name     String
+  address  String
+  city     String
+  state    String
+  capacity Int
+
+  events Event[]
+  seats  Seat[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("venues")
+}
+
+model Seat {
+  id      String @id @default(uuid())
+  venueId String
+
+  row     String
+  number  Int
+  section String?
+
+  venue      Venue       @relation(fields: [venueId], references: [id])
+  eventSeats EventSeat[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([venueId, row, number])
+  @@map("seats")
+}
+
+model Event {
+  id          String @id @default(uuid())
+  organizerId String
+  venueId     String
+
+  name        String
+  description String
+  type        EventType
+  status      EventStatus
+
+  startAt DateTime
+  endAt   DateTime?
+
+  organizer User  @relation(fields: [organizerId], references: [id])
+  venue     Venue @relation(fields: [venueId], references: [id])
+
+  eventSeats   EventSeat[]
+  ticketTypes  TicketType[]
+  reservations Reservation[]
+  tickets      Ticket[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizerId])
+  @@index([venueId])
+  @@index([startAt])
+  @@map("events")
+}
+
+model EventSeat {
+  id      String @id @default(uuid())
+  eventId String
+  seatId  String
+
+  price  Decimal         @db.Decimal(10, 2)
+  status EventSeatStatus @default(AVAILABLE)
+
+  event Event @relation(fields: [eventId], references: [id])
+  seat  Seat  @relation(fields: [seatId], references: [id])
+
+  reservationItems ReservationItem[]
+  tickets          Ticket[]
+
+  @@unique([eventId, seatId])
+  @@index([eventId, status])
+  @@map("event_seats")
+}
+
+model TicketType {
+  id      String @id @default(uuid())
+  eventId String
+
+  name         String
+  price        Decimal @db.Decimal(10, 2)
+  quantity     Int
+  soldQuantity Int     @default(0)
+
+  event Event @relation(fields: [eventId], references: [id])
+
+  reservationItems ReservationItem[]
+  tickets          Ticket[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@map("ticket_types")
+}
+
+model Reservation {
+  id      String @id @default(uuid())
+  userId  String
+  eventId String
+
+  status      ReservationStatus @default(PENDING)
+  totalAmount Decimal           @db.Decimal(10, 2)
+  expiresAt   DateTime
+
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
+
+  items   ReservationItem[]
+  payment Payment?
+  tickets Ticket[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([eventId])
+  @@index([status])
+  @@map("reservations")
+}
+
+model ReservationItem {
+  id            String @id @default(uuid())
+  reservationId String
+
+  ticketTypeId String?
+  eventSeatId  String?
+
+  quantity  Int     @default(1)
+  unitPrice Decimal @db.Decimal(10, 2)
+
+  reservation Reservation @relation(fields: [reservationId], references: [id])
+  ticketType  TicketType? @relation(fields: [ticketTypeId], references: [id])
+  eventSeat   EventSeat?  @relation(fields: [eventSeatId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([reservationId])
+  @@index([eventSeatId])
+  @@map("reservation_items")
+}
+
+model Payment {
+  id            String @id @default(uuid())
+  reservationId String @unique
+
+  amount Decimal       @db.Decimal(10, 2)
+  status PaymentStatus @default(PENDING)
+  method String
+
+  reservation Reservation @relation(fields: [reservationId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payments")
+}
+
+model Ticket {
+  id String @id @default(uuid())
+
+  reservationId String
+  eventId       String
+  userId        String
+
+  ticketTypeId String?
+  eventSeatId  String?
+
+  ticketCode String @unique
+  shareToken String @unique
+
+  status TicketStatus @default(VALID)
+
+  reservation Reservation @relation(fields: [reservationId], references: [id])
+  event       Event       @relation(fields: [eventId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+  ticketType  TicketType? @relation(fields: [ticketTypeId], references: [id])
+  eventSeat   EventSeat?  @relation(fields: [eventSeatId], references: [id])
+
+  checkIn CheckIn?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([userId])
+  @@index([status])
+  @@map("tickets")
+}
+
+model CheckIn {
+  id         String @id @default(uuid())
+  ticketId   String @unique
+  gateUserId String
+
+  checkedAt DateTime @default(now())
+
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+  gateUser User   @relation(fields: [gateUserId], references: [id])
+
+  @@index([gateUserId])
+  @@map("check_ins")
+}
