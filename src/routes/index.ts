@@ -8,6 +8,9 @@ import venueRoutes from "../modules/venues/venue.routes.js";
 import eventRoutes from "../modules/events/event.routes.js";
 import reservationRoutes from "../modules/reservations/reservation.routes.js";
 import paymentRoutes from "../modules/payments/payment.routes.js";
+import ticketRoutes from "../modules/tickets/ticket.routes.js";
+import checkinRoutes from "../modules/checkins/checkin.routes.js";
+import ticketmasterRoutes from "../modules/ticketmaster/ticketmaster.routes.js";
 
 const router = Router();
 
@@ -39,6 +42,10 @@ router.get(
         });
     },
 );
+router.use(
+    "/ticketmaster",
+    ticketmasterRoutes,
+);
 
 
 
@@ -47,5 +54,7 @@ router.use("/venues", venueRoutes);
 router.use("/events", eventRoutes);
 router.use("/reservations", reservationRoutes,);
 router.use("/payments", paymentRoutes);
+router.use("/tickets", ticketRoutes);
+router.use("/checkins", checkinRoutes);
 
 export default router;
