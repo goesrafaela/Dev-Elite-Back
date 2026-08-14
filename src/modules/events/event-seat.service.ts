@@ -10,37 +10,65 @@ export async function createEventSeats(
         where: {
             id: eventId,
         },
-        include: {
-            venue: {
-                include: {
-                    seats: true,
-                },
-            },
-        },
     });
 
     if (!event) {
         throw new Error("EVENT_NOT_FOUND");
     }
 
-    if (event.venue.seats.length === 0) {
-        throw new Error("VENUE_HAS_NO_SEATS");
-    }
-
-    const eventSeats = await prisma.eventSeat.createMany({
-        data: event.venue.seats.map((seat) => ({
-            eventId: event.id,
-            seatId: seat.id,
-            price: data.price,
-            status: "AVAILABLE",
-        })),
-        skipDuplicates: true,
+    const existingSeats = await prisma.eventSeat.count({
+        where: {
+            eventId,
+        },
     });
 
-    return eventSeats;
+    if (existingSeats > 0) {
+        throw new Error("EVENT_SEATS_ALREADY_CREATED");
+    }
+
+    if (!event.rows || !event.seatsPerRow) {
+        throw new Error(
+            "EVENT_SEAT_CONFIGURATION_NOT_FOUND",
+        );
+    }
+
+    const eventSeats = [];
+
+    for (
+        let rowIndex = 0;
+        rowIndex < event.rows;
+        rowIndex++
+    ) {
+        const row = String.fromCharCode(
+            "A".charCodeAt(0) + rowIndex,
+        );
+
+        for (
+            let number = 1;
+            number <= event.seatsPerRow;
+            number++
+        ) {
+            eventSeats.push({
+                eventId: event.id,
+                row,
+                number,
+                price: data.price,
+                status: "AVAILABLE" as const,
+            });
+        }
+    }
+
+    const result = await prisma.eventSeat.createMany({
+        data: eventSeats,
+    });
+
+    return result;
 }
 
-export async function getEventSeats(eventId: string) {
+
+export async function getEventSeats(
+    eventId: string,
+) {
     const event = await prisma.event.findUnique({
         where: {
             id: eventId,
@@ -48,6 +76,8 @@ export async function getEventSeats(eventId: string) {
         select: {
             id: true,
             name: true,
+            rows: true,
+            seatsPerRow: true,
         },
     });
 
@@ -59,19 +89,12 @@ export async function getEventSeats(eventId: string) {
         where: {
             eventId,
         },
-        include: {
-            seat: true,
-        },
         orderBy: [
             {
-                seat: {
-                    row: "asc",
-                },
+                row: "asc",
             },
             {
-                seat: {
-                    number: "asc",
-                },
+                number: "asc",
             },
         ],
     });

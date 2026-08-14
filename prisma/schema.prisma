@@ -120,6 +120,10 @@ model Event {
   startAt DateTime
   endAt   DateTime?
 
+  
+  rows         Int?
+  seatsPerRow  Int?
+
   organizer User  @relation(fields: [organizerId], references: [id])
   venue     Venue @relation(fields: [venueId], references: [id])
 

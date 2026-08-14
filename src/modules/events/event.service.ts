@@ -29,6 +29,9 @@ export async function createEvent(
 
             startAt: data.startAt,
             endAt: data.endAt,
+
+            rows: data.rows,
+            seatsPerRow: data.seatsPerRow,
         },
         include: {
             venue: true,

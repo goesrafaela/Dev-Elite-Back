@@ -129,6 +129,8 @@ export const EventScalarFieldEnum = {
   status: 'status',
   startAt: 'startAt',
   endAt: 'endAt',
+  rows: 'rows',
+  seatsPerRow: 'seatsPerRow',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

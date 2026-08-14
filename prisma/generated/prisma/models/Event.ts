@@ -20,8 +20,20 @@ export type EventModel = runtime.Types.Result.DefaultSelection<Prisma.$EventPayl
 
 export type AggregateEvent = {
   _count: EventCountAggregateOutputType | null
+  _avg: EventAvgAggregateOutputType | null
+  _sum: EventSumAggregateOutputType | null
   _min: EventMinAggregateOutputType | null
   _max: EventMaxAggregateOutputType | null
+}
+
+export type EventAvgAggregateOutputType = {
+  rows: number | null
+  seatsPerRow: number | null
+}
+
+export type EventSumAggregateOutputType = {
+  rows: number | null
+  seatsPerRow: number | null
 }
 
 export type EventMinAggregateOutputType = {
@@ -34,6 +46,8 @@ export type EventMinAggregateOutputType = {
   status: $Enums.EventStatus | null
   startAt: Date | null
   endAt: Date | null
+  rows: number | null
+  seatsPerRow: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -48,6 +62,8 @@ export type EventMaxAggregateOutputType = {
   status: $Enums.EventStatus | null
   startAt: Date | null
   endAt: Date | null
+  rows: number | null
+  seatsPerRow: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,11 +78,23 @@ export type EventCountAggregateOutputType = {
   status: number
   startAt: number
   endAt: number
+  rows: number
+  seatsPerRow: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type EventAvgAggregateInputType = {
+  rows?: true
+  seatsPerRow?: true
+}
+
+export type EventSumAggregateInputType = {
+  rows?: true
+  seatsPerRow?: true
+}
 
 export type EventMinAggregateInputType = {
   id?: true
@@ -78,6 +106,8 @@ export type EventMinAggregateInputType = {
   status?: true
   startAt?: true
   endAt?: true
+  rows?: true
+  seatsPerRow?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -92,6 +122,8 @@ export type EventMaxAggregateInputType = {
   status?: true
   startAt?: true
   endAt?: true
+  rows?: true
+  seatsPerRow?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -106,6 +138,8 @@ export type EventCountAggregateInputType = {
   status?: true
   startAt?: true
   endAt?: true
+  rows?: true
+  seatsPerRow?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -149,6 +183,18 @@ export type EventAggregateArgs<ExtArgs extends runtime.Types.Extensions.Internal
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: EventAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: EventSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: EventMinAggregateInputType
@@ -179,6 +225,8 @@ export type EventGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   _count?: EventCountAggregateInputType | true
+  _avg?: EventAvgAggregateInputType
+  _sum?: EventSumAggregateInputType
   _min?: EventMinAggregateInputType
   _max?: EventMaxAggregateInputType
 }
@@ -193,9 +241,13 @@ export type EventGroupByOutputType = {
   status: $Enums.EventStatus
   startAt: Date
   endAt: Date | null
+  rows: number | null
+  seatsPerRow: number | null
   createdAt: Date
   updatedAt: Date
   _count: EventCountAggregateOutputType | null
+  _avg: EventAvgAggregateOutputType | null
+  _sum: EventSumAggregateOutputType | null
   _min: EventMinAggregateOutputType | null
   _max: EventMaxAggregateOutputType | null
 }
@@ -228,6 +280,8 @@ export type EventWhereInput = {
   status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
   startAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   endAt?: Prisma.DateTimeNullableFilter<"Event"> | Date | string | null
+  rows?: Prisma.IntNullableFilter<"Event"> | number | null
+  seatsPerRow?: Prisma.IntNullableFilter<"Event"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   organizer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -248,6 +302,8 @@ export type EventOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   startAt?: Prisma.SortOrder
   endAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rows?: Prisma.SortOrderInput | Prisma.SortOrder
+  seatsPerRow?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   organizer?: Prisma.UserOrderByWithRelationInput
@@ -271,6 +327,8 @@ export type EventWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
   startAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   endAt?: Prisma.DateTimeNullableFilter<"Event"> | Date | string | null
+  rows?: Prisma.IntNullableFilter<"Event"> | number | null
+  seatsPerRow?: Prisma.IntNullableFilter<"Event"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   organizer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -291,11 +349,15 @@ export type EventOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   startAt?: Prisma.SortOrder
   endAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rows?: Prisma.SortOrderInput | Prisma.SortOrder
+  seatsPerRow?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.EventCountOrderByAggregateInput
+  _avg?: Prisma.EventAvgOrderByAggregateInput
   _max?: Prisma.EventMaxOrderByAggregateInput
   _min?: Prisma.EventMinOrderByAggregateInput
+  _sum?: Prisma.EventSumOrderByAggregateInput
 }
 
 export type EventScalarWhereWithAggregatesInput = {
@@ -311,6 +373,8 @@ export type EventScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumEventStatusWithAggregatesFilter<"Event"> | $Enums.EventStatus
   startAt?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
   endAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Event"> | Date | string | null
+  rows?: Prisma.IntNullableWithAggregatesFilter<"Event"> | number | null
+  seatsPerRow?: Prisma.IntNullableWithAggregatesFilter<"Event"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
 }
@@ -323,6 +387,8 @@ export type EventCreateInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organizer: Prisma.UserCreateNestedOneWithoutEventsInput
@@ -343,6 +409,8 @@ export type EventUncheckedCreateInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   eventSeats?: Prisma.EventSeatUncheckedCreateNestedManyWithoutEventInput
@@ -359,6 +427,8 @@ export type EventUpdateInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizer?: Prisma.UserUpdateOneRequiredWithoutEventsNestedInput
@@ -379,6 +449,8 @@ export type EventUncheckedUpdateInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventSeats?: Prisma.EventSeatUncheckedUpdateManyWithoutEventNestedInput
@@ -397,6 +469,8 @@ export type EventCreateManyInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -409,6 +483,8 @@ export type EventUpdateManyMutationInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -423,6 +499,8 @@ export type EventUncheckedUpdateManyInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -447,8 +525,15 @@ export type EventCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   startAt?: Prisma.SortOrder
   endAt?: Prisma.SortOrder
+  rows?: Prisma.SortOrder
+  seatsPerRow?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type EventAvgOrderByAggregateInput = {
+  rows?: Prisma.SortOrder
+  seatsPerRow?: Prisma.SortOrder
 }
 
 export type EventMaxOrderByAggregateInput = {
@@ -461,6 +546,8 @@ export type EventMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   startAt?: Prisma.SortOrder
   endAt?: Prisma.SortOrder
+  rows?: Prisma.SortOrder
+  seatsPerRow?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -475,8 +562,15 @@ export type EventMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   startAt?: Prisma.SortOrder
   endAt?: Prisma.SortOrder
+  rows?: Prisma.SortOrder
+  seatsPerRow?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type EventSumOrderByAggregateInput = {
+  rows?: Prisma.SortOrder
+  seatsPerRow?: Prisma.SortOrder
 }
 
 export type EventScalarRelationFilter = {
@@ -580,6 +674,14 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type EventCreateNestedOneWithoutEventSeatsInput = {
   create?: Prisma.XOR<Prisma.EventCreateWithoutEventSeatsInput, Prisma.EventUncheckedCreateWithoutEventSeatsInput>
   connectOrCreate?: Prisma.EventCreateOrConnectWithoutEventSeatsInput
@@ -644,6 +746,8 @@ export type EventCreateWithoutOrganizerInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   venue: Prisma.VenueCreateNestedOneWithoutEventsInput
@@ -662,6 +766,8 @@ export type EventUncheckedCreateWithoutOrganizerInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   eventSeats?: Prisma.EventSeatUncheckedCreateNestedManyWithoutEventInput
@@ -709,6 +815,8 @@ export type EventScalarWhereInput = {
   status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
   startAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   endAt?: Prisma.DateTimeNullableFilter<"Event"> | Date | string | null
+  rows?: Prisma.IntNullableFilter<"Event"> | number | null
+  seatsPerRow?: Prisma.IntNullableFilter<"Event"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Event"> | Date | string
 }
@@ -721,6 +829,8 @@ export type EventCreateWithoutVenueInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organizer: Prisma.UserCreateNestedOneWithoutEventsInput
@@ -739,6 +849,8 @@ export type EventUncheckedCreateWithoutVenueInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   eventSeats?: Prisma.EventSeatUncheckedCreateNestedManyWithoutEventInput
@@ -781,6 +893,8 @@ export type EventCreateWithoutEventSeatsInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organizer: Prisma.UserCreateNestedOneWithoutEventsInput
@@ -800,6 +914,8 @@ export type EventUncheckedCreateWithoutEventSeatsInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ticketTypes?: Prisma.TicketTypeUncheckedCreateNestedManyWithoutEventInput
@@ -831,6 +947,8 @@ export type EventUpdateWithoutEventSeatsInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizer?: Prisma.UserUpdateOneRequiredWithoutEventsNestedInput
@@ -850,6 +968,8 @@ export type EventUncheckedUpdateWithoutEventSeatsInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ticketTypes?: Prisma.TicketTypeUncheckedUpdateManyWithoutEventNestedInput
@@ -865,6 +985,8 @@ export type EventCreateWithoutTicketTypesInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organizer: Prisma.UserCreateNestedOneWithoutEventsInput
@@ -884,6 +1006,8 @@ export type EventUncheckedCreateWithoutTicketTypesInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   eventSeats?: Prisma.EventSeatUncheckedCreateNestedManyWithoutEventInput
@@ -915,6 +1039,8 @@ export type EventUpdateWithoutTicketTypesInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizer?: Prisma.UserUpdateOneRequiredWithoutEventsNestedInput
@@ -934,6 +1060,8 @@ export type EventUncheckedUpdateWithoutTicketTypesInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventSeats?: Prisma.EventSeatUncheckedUpdateManyWithoutEventNestedInput
@@ -949,6 +1077,8 @@ export type EventCreateWithoutReservationsInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organizer: Prisma.UserCreateNestedOneWithoutEventsInput
@@ -968,6 +1098,8 @@ export type EventUncheckedCreateWithoutReservationsInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   eventSeats?: Prisma.EventSeatUncheckedCreateNestedManyWithoutEventInput
@@ -999,6 +1131,8 @@ export type EventUpdateWithoutReservationsInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizer?: Prisma.UserUpdateOneRequiredWithoutEventsNestedInput
@@ -1018,6 +1152,8 @@ export type EventUncheckedUpdateWithoutReservationsInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventSeats?: Prisma.EventSeatUncheckedUpdateManyWithoutEventNestedInput
@@ -1033,6 +1169,8 @@ export type EventCreateWithoutTicketsInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organizer: Prisma.UserCreateNestedOneWithoutEventsInput
@@ -1052,6 +1190,8 @@ export type EventUncheckedCreateWithoutTicketsInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   eventSeats?: Prisma.EventSeatUncheckedCreateNestedManyWithoutEventInput
@@ -1083,6 +1223,8 @@ export type EventUpdateWithoutTicketsInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizer?: Prisma.UserUpdateOneRequiredWithoutEventsNestedInput
@@ -1102,6 +1244,8 @@ export type EventUncheckedUpdateWithoutTicketsInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventSeats?: Prisma.EventSeatUncheckedUpdateManyWithoutEventNestedInput
@@ -1118,6 +1262,8 @@ export type EventCreateManyOrganizerInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1130,6 +1276,8 @@ export type EventUpdateWithoutOrganizerInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   venue?: Prisma.VenueUpdateOneRequiredWithoutEventsNestedInput
@@ -1148,6 +1296,8 @@ export type EventUncheckedUpdateWithoutOrganizerInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventSeats?: Prisma.EventSeatUncheckedUpdateManyWithoutEventNestedInput
@@ -1165,6 +1315,8 @@ export type EventUncheckedUpdateManyWithoutOrganizerInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1178,6 +1330,8 @@ export type EventCreateManyVenueInput = {
   status: $Enums.EventStatus
   startAt: Date | string
   endAt?: Date | string | null
+  rows?: number | null
+  seatsPerRow?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1190,6 +1344,8 @@ export type EventUpdateWithoutVenueInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizer?: Prisma.UserUpdateOneRequiredWithoutEventsNestedInput
@@ -1208,6 +1364,8 @@ export type EventUncheckedUpdateWithoutVenueInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventSeats?: Prisma.EventSeatUncheckedUpdateManyWithoutEventNestedInput
@@ -1225,6 +1383,8 @@ export type EventUncheckedUpdateManyWithoutVenueInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rows?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seatsPerRow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1297,6 +1457,8 @@ export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   status?: boolean
   startAt?: boolean
   endAt?: boolean
+  rows?: boolean
+  seatsPerRow?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organizer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1318,6 +1480,8 @@ export type EventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   status?: boolean
   startAt?: boolean
   endAt?: boolean
+  rows?: boolean
+  seatsPerRow?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organizer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1334,6 +1498,8 @@ export type EventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   status?: boolean
   startAt?: boolean
   endAt?: boolean
+  rows?: boolean
+  seatsPerRow?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organizer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1350,11 +1516,13 @@ export type EventSelectScalar = {
   status?: boolean
   startAt?: boolean
   endAt?: boolean
+  rows?: boolean
+  seatsPerRow?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizerId" | "venueId" | "name" | "description" | "type" | "status" | "startAt" | "endAt" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
+export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizerId" | "venueId" | "name" | "description" | "type" | "status" | "startAt" | "endAt" | "rows" | "seatsPerRow" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
 export type EventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organizer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   venue?: boolean | Prisma.VenueDefaultArgs<ExtArgs>
@@ -1393,6 +1561,8 @@ export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     status: $Enums.EventStatus
     startAt: Date
     endAt: Date | null
+    rows: number | null
+    seatsPerRow: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["event"]>
@@ -1833,6 +2003,8 @@ export interface EventFieldRefs {
   readonly status: Prisma.FieldRef<"Event", 'EventStatus'>
   readonly startAt: Prisma.FieldRef<"Event", 'DateTime'>
   readonly endAt: Prisma.FieldRef<"Event", 'DateTime'>
+  readonly rows: Prisma.FieldRef<"Event", 'Int'>
+  readonly seatsPerRow: Prisma.FieldRef<"Event", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Event", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Event", 'DateTime'>
 }
