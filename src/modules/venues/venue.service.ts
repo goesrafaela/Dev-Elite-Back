@@ -73,3 +73,10 @@ export async function getVenueSeats(venueId: string) {
         ],
     });
 }
+export async function getVenues() {
+    return prisma.venue.findMany({
+        orderBy: {
+            name: "asc",
+        },
+    });
+}

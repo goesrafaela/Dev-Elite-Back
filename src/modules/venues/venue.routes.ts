@@ -13,6 +13,7 @@ import {
     createVenueController,
     getVenueController,
     getVenueSeatsController,
+    getVenuesController
 } from "./venue.controller.js";
 
 const router = Router();
@@ -22,6 +23,11 @@ router.post(
     authMiddleware,
     roleMiddleware("ORGANIZER"),
     createVenueController,
+);
+
+router.get(
+    "/",
+    getVenuesController,
 );
 
 router.get(

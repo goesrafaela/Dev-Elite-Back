@@ -1,9 +1,12 @@
-import type { Response } from "express";
+import type { Response, Request } from "express";
 
 import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.js";
 
 import {
-    createEvent, publishEvent
+    createEvent,
+    publishEvent,
+    getPublishedEvents,
+    getEventById
 } from "./event.service.js";
 
 import {
@@ -112,6 +115,65 @@ export async function publishEventController(
 
         return res.status(500).json({
             message: "Erro ao publicar evento",
+        });
+    }
+}
+export async function getPublishedEventsController(
+    req: Request,
+    res: Response,
+) {
+    try {
+        const events =
+            await getPublishedEvents();
+
+        return res.status(200).json({
+            events,
+        });
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            message: "Erro ao buscar eventos",
+        });
+    }
+}
+
+export async function getEventByIdController(
+    req: Request,
+    res: Response,
+) {
+    try {
+        const eventId = Array.isArray(req.params.id)
+            ? req.params.id[0]
+            : req.params.id;
+
+        if (!eventId) {
+            return res.status(400).json({
+                message: "ID do evento inválido",
+            });
+        }
+
+        const event = await getEventById(
+            eventId,
+        );
+
+        return res.status(200).json({
+            event,
+        });
+    } catch (error) {
+        if (
+            error instanceof Error &&
+            error.message === "EVENT_NOT_FOUND"
+        ) {
+            return res.status(404).json({
+                message: "Evento não encontrado",
+            });
+        }
+
+        console.error(error);
+
+        return res.status(500).json({
+            message: "Erro ao buscar evento",
         });
     }
 }

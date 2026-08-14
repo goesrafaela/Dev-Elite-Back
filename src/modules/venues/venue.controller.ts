@@ -7,6 +7,7 @@ import {
     createVenue,
     getVenueById,
     getVenueSeats,
+    getVenues
 } from "./venue.service.js";
 
 import {
@@ -158,6 +159,24 @@ export async function getVenueSeatsController(
 
         return res.status(500).json({
             message: "Erro ao buscar assentos",
+        });
+    }
+}
+export async function getVenuesController(
+    req: Request,
+    res: Response,
+) {
+    try {
+        const venues = await getVenues();
+
+        return res.status(200).json({
+            venues,
+        });
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            message: "Erro ao buscar locais",
         });
     }
 }

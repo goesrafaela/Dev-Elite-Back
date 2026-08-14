@@ -1,6 +1,7 @@
 import { prisma } from "../../config/database.js";
 
 import type { CreateReservationInput } from "./reservation.schema.js";
+import { createTicketsForReservation } from "../tickets/ticket.service.js";
 
 export async function createReservation(
     userId: string,
@@ -105,5 +106,138 @@ export async function createReservation(
         }
 
         return reservation;
+    });
+}
+
+export async function getReservationById(
+    reservationId: string,
+    userId: string,
+) {
+    const reservation =
+        await prisma.reservation.findFirst({
+            where: {
+                id: reservationId,
+                userId,
+            },
+            include: {
+                event: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                        type: true,
+                        startAt: true,
+                        endAt: true,
+                        status: true,
+                        venue: {
+                            select: {
+                                id: true,
+                                name: true,
+                                address: true,
+                                city: true,
+                                state: true,
+                            },
+                        },
+                    },
+                },
+
+                items: {
+                    include: {
+                        eventSeat: {
+                            include: {
+                                seat: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+    if (!reservation) {
+        throw new Error(
+            "RESERVATION_NOT_FOUND",
+        );
+    }
+
+    return reservation;
+}
+
+export async function payReservation(
+    reservationId: string,
+    userId: string,
+) {
+    return prisma.$transaction(async (tx) => {
+        const reservation =
+            await tx.reservation.findFirst({
+                where: {
+                    id: reservationId,
+                    userId,
+                },
+                include: {
+                    items: true,
+                },
+            });
+
+        if (!reservation) {
+            throw new Error(
+                "RESERVATION_NOT_FOUND",
+            );
+        }
+
+        if (reservation.status === "CONFIRMED") {
+            throw new Error(
+                "RESERVATION_ALREADY_PAID",
+            );
+        }
+
+        if (reservation.status !== "PENDING") {
+            throw new Error(
+                "RESERVATION_NOT_AVAILABLE",
+            );
+        }
+
+        if (
+            reservation.expiresAt &&
+            reservation.expiresAt < new Date()
+        ) {
+            throw new Error(
+                "RESERVATION_EXPIRED",
+            );
+        }
+
+        const updatedReservation =
+            await tx.reservation.update({
+                where: {
+                    id: reservation.id,
+                },
+                data: {
+                    status: "CONFIRMED",
+                },
+            });
+
+        await tx.eventSeat.updateMany({
+            where: {
+                id: {
+                    in: reservation.items.map(
+                        (item) => item.eventSeatId,
+                    ),
+                },
+                status: "RESERVED",
+            },
+            data: {
+                status: "SOLD",
+            },
+        });
+
+        const tickets =
+            await createTicketsForReservation(
+                tx,
+                reservation.id,
+            );
+
+        return {
+            reservation: updatedReservation,
+            tickets,
+        };
     });
 }

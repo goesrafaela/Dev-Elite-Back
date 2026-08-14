@@ -11,6 +11,7 @@ import paymentRoutes from "../modules/payments/payment.routes.js";
 import ticketRoutes from "../modules/tickets/ticket.routes.js";
 import checkinRoutes from "../modules/checkins/checkin.routes.js";
 import ticketmasterRoutes from "../modules/ticketmaster/ticketmaster.routes.js";
+import organizerRoutes from "../modules/organizer/organizer.routes.js";
 
 const router = Router();
 
@@ -56,5 +57,6 @@ router.use("/reservations", reservationRoutes,);
 router.use("/payments", paymentRoutes);
 router.use("/tickets", ticketRoutes);
 router.use("/checkins", checkinRoutes);
+router.use("/organizer", organizerRoutes);
 
 export default router;

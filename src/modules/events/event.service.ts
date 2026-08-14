@@ -68,3 +68,36 @@ export async function publishEvent(
 
     return updatedEvent;
 }
+
+export async function getPublishedEvents() {
+    return prisma.event.findMany({
+        where: {
+            status: "PUBLISHED",
+        },
+        include: {
+            venue: true,
+        },
+        orderBy: {
+            startAt: "asc",
+        },
+    });
+}
+
+export async function getEventById(
+    eventId: string,
+) {
+    const event = await prisma.event.findUnique({
+        where: {
+            id: eventId,
+        },
+        include: {
+            venue: true,
+        },
+    });
+
+    if (!event) {
+        throw new Error("EVENT_NOT_FOUND");
+    }
+
+    return event;
+}

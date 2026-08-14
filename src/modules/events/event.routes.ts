@@ -1,10 +1,18 @@
 import { Router } from "express";
 
-import { authMiddleware } from "../../middlewares/auth.middleware.js";
-import { roleMiddleware } from "../../middlewares/role.middleware.js";
+import {
+    authMiddleware,
+} from "../../middlewares/auth.middleware.js";
 
 import {
-    createEventController, publishEventController
+    roleMiddleware,
+} from "../../middlewares/role.middleware.js";
+
+import {
+    createEventController,
+    publishEventController,
+    getPublishedEventsController,
+    getEventByIdController,
 } from "./event.controller.js";
 
 import {
@@ -14,11 +22,21 @@ import {
 
 const router = Router();
 
+router.get(
+    "/",
+    getPublishedEventsController,
+);
+
 router.post(
     "/",
     authMiddleware,
     roleMiddleware("ORGANIZER"),
     createEventController,
+);
+
+router.get(
+    "/:id",
+    getEventByIdController,
 );
 
 router.post(
