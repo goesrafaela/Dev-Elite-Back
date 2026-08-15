@@ -13,10 +13,17 @@ import {
     createVenueController,
     getVenueController,
     getVenueSeatsController,
-    getVenuesController
+    getVenuesController,
 } from "./venue.controller.js";
 
 const router = Router();
+
+
+router.get(
+    "/",
+    getVenuesController,
+);
+
 
 router.post(
     "/",
@@ -25,15 +32,12 @@ router.post(
     createVenueController,
 );
 
-router.get(
-    "/",
-    getVenuesController,
-);
 
 router.get(
     "/:id",
     getVenueController,
 );
+
 
 router.post(
     "/:id/seats",
@@ -41,6 +45,7 @@ router.post(
     roleMiddleware("ORGANIZER"),
     createSeatController,
 );
+
 
 router.get(
     "/:id/seats",

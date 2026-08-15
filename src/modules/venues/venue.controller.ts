@@ -7,7 +7,7 @@ import {
     createVenue,
     getVenueById,
     getVenueSeats,
-    getVenues
+    getVenues,
 } from "./venue.service.js";
 
 import {
@@ -15,8 +15,12 @@ import {
     createVenueSchema,
 } from "./venue.schema.js";
 
-function getParamId(value: string | string[]): string {
-    const id = Array.isArray(value) ? value[0] : value;
+function getParamId(
+    value: string | string[],
+): string {
+    const id = Array.isArray(value)
+        ? value[0]
+        : value;
 
     if (!id) {
         throw new Error("INVALID_ID");
@@ -30,7 +34,9 @@ export async function createVenueController(
     res: Response,
 ) {
     try {
-        const data = createVenueSchema.parse(req.body);
+        const data = createVenueSchema.parse(
+            req.body,
+        );
 
         const venue = await createVenue(data);
 
@@ -38,10 +44,24 @@ export async function createVenueController(
             venue,
         });
     } catch (error) {
-        if (error instanceof Error && error.name === "ZodError") {
+        if (
+            error instanceof Error &&
+            error.name === "ZodError"
+        ) {
             return res.status(400).json({
                 message: "Dados do local inválidos",
                 errors: error,
+            });
+        }
+
+        if (
+            error instanceof Error &&
+            error.message ===
+            "VENUE_CAPACITY_MISMATCH"
+        ) {
+            return res.status(400).json({
+                message:
+                    "A capacidade deve ser igual ao número de fileiras multiplicado pelos assentos por fileira",
             });
         }
 
@@ -49,6 +69,25 @@ export async function createVenueController(
 
         return res.status(500).json({
             message: "Erro ao criar local",
+        });
+    }
+}
+
+export async function getVenuesController(
+    req: Request,
+    res: Response,
+) {
+    try {
+        const venues = await getVenues();
+
+        return res.status(200).json({
+            venues,
+        });
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            message: "Erro ao buscar locais",
         });
     }
 }
@@ -68,11 +107,14 @@ export async function getVenueController(
             });
         }
 
-        return res.json({
+        return res.status(200).json({
             venue,
         });
     } catch (error) {
-        if (error instanceof Error && error.message === "INVALID_ID") {
+        if (
+            error instanceof Error &&
+            error.message === "INVALID_ID"
+        ) {
             return res.status(400).json({
                 message: "ID do local inválido",
             });
@@ -91,31 +133,49 @@ export async function createSeatController(
     res: Response,
 ) {
     try {
-        const venueId = getParamId(req.params.id);
+        const venueId = getParamId(
+            req.params.id,
+        );
 
-        const data = createSeatSchema.parse(req.body);
+        const data = createSeatSchema.parse(
+            req.body,
+        );
 
-        const seat = await createSeat(venueId, data);
+        const seat = await createSeat(
+            venueId,
+            data,
+        );
 
         return res.status(201).json({
             seat,
         });
     } catch (error) {
-        if (error instanceof Error && error.message === "INVALID_ID") {
+        if (
+            error instanceof Error &&
+            error.message === "INVALID_ID"
+        ) {
             return res.status(400).json({
                 message: "ID do local inválido",
             });
         }
 
-        if (error instanceof Error && error.message === "VENUE_NOT_FOUND") {
+        if (
+            error instanceof Error &&
+            error.message ===
+            "VENUE_NOT_FOUND"
+        ) {
             return res.status(404).json({
                 message: "Local não encontrado",
             });
         }
 
-        if (error instanceof Error && error.name === "ZodError") {
+        if (
+            error instanceof Error &&
+            error.name === "ZodError"
+        ) {
             return res.status(400).json({
-                message: "Dados do assento inválidos",
+                message:
+                    "Dados do assento inválidos",
                 errors: error,
             });
         }
@@ -133,9 +193,12 @@ export async function getVenueSeatsController(
     res: Response,
 ) {
     try {
-        const venueId = getParamId(req.params.id);
+        const venueId = getParamId(
+            req.params.id,
+        );
 
-        const venue = await getVenueById(venueId);
+        const venue =
+            await getVenueById(venueId);
 
         if (!venue) {
             return res.status(404).json({
@@ -143,40 +206,28 @@ export async function getVenueSeatsController(
             });
         }
 
-        const seats = await getVenueSeats(venueId);
+        const seats =
+            await getVenueSeats(venueId);
 
-        return res.json({
+        return res.status(200).json({
             seats,
         });
     } catch (error) {
-        if (error instanceof Error && error.message === "INVALID_ID") {
+        if (
+            error instanceof Error &&
+            error.message === "INVALID_ID"
+        ) {
             return res.status(400).json({
-                message: "ID do local inválido",
+                message:
+                    "ID do local inválido",
             });
         }
 
         console.error(error);
 
         return res.status(500).json({
-            message: "Erro ao buscar assentos",
-        });
-    }
-}
-export async function getVenuesController(
-    req: Request,
-    res: Response,
-) {
-    try {
-        const venues = await getVenues();
-
-        return res.status(200).json({
-            venues,
-        });
-    } catch (error) {
-        console.error(error);
-
-        return res.status(500).json({
-            message: "Erro ao buscar locais",
+            message:
+                "Erro ao buscar assentos",
         });
     }
 }
