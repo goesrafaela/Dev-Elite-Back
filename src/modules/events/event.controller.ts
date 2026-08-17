@@ -1,4 +1,4 @@
-import type { Response, Request } from "express";
+import type { Request, Response } from "express";
 
 import type { AuthenticatedRequest } from "../../middlewares/auth.middleware.js";
 
@@ -6,11 +6,12 @@ import {
     createEvent,
     publishEvent,
     getPublishedEvents,
-    getEventById
+    getEventById,
 } from "./event.service.js";
 
 import {
     createEventSchema,
+    updateEventSchema,
 } from "./event.schema.js";
 
 export async function createEventController(
@@ -54,7 +55,7 @@ export async function createEventController(
             });
         }
 
-        console.error(error);
+        console.error("Erro ao criar evento:", error);
 
         return res.status(500).json({
             message: "Erro ao criar evento",
@@ -111,26 +112,29 @@ export async function publishEventController(
             });
         }
 
-        console.error(error);
+        console.error("Erro ao publicar evento:", error);
 
         return res.status(500).json({
             message: "Erro ao publicar evento",
         });
     }
 }
+
 export async function getPublishedEventsController(
     req: Request,
     res: Response,
 ) {
     try {
-        const events =
-            await getPublishedEvents();
+        const events = await getPublishedEvents();
 
         return res.status(200).json({
             events,
         });
     } catch (error) {
-        console.error(error);
+        console.error(
+            "Erro ao buscar eventos publicados:",
+            error,
+        );
 
         return res.status(500).json({
             message: "Erro ao buscar eventos",
@@ -153,9 +157,7 @@ export async function getEventByIdController(
             });
         }
 
-        const event = await getEventById(
-            eventId,
-        );
+        const event = await getEventById(eventId);
 
         return res.status(200).json({
             event,
@@ -170,7 +172,10 @@ export async function getEventByIdController(
             });
         }
 
-        console.error(error);
+        console.error(
+            "Erro ao buscar evento:",
+            error,
+        );
 
         return res.status(500).json({
             message: "Erro ao buscar evento",
